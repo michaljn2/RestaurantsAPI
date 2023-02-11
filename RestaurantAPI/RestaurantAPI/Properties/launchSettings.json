@@ -14,6 +14,7 @@
       "launchBrowser": true,
       "launchUrl": "weatherforecast",
       "environmentVariables": {
+        // definiuje sposob uruchomienia w nawiazaniu do appsettings.json
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
