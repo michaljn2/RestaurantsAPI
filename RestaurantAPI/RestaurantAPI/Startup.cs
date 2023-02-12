@@ -1,15 +1,9 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using RestaurantAPI.Entities;
 
 namespace RestaurantAPI
 {
@@ -27,11 +21,15 @@ namespace RestaurantAPI
         {
             services.AddTransient<IWeatherForecastService, WeatherForecastService>();
             services.AddControllers();
+            services.AddDbContext<RestaurantDbContext>();
+            services.AddScoped<RestaurantSeeder>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, RestaurantSeeder seeder)
         {
+            // zanim zapytanie przejdzie do kontrolera, dane wpisz¹ sie do bazy
+            seeder.Seed();
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

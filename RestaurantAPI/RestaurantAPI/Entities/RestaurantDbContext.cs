@@ -20,11 +20,17 @@ namespace RestaurantAPI.Entities
                 .Property(d => d.Name)
                 .IsRequired();
 
+            // seedowanie tabeli danymi 
+            //modelBuilder.Entity<Restaurant>()
+                //.HasData()
+
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(_connectionString);
         }
+
+
     }
 }
