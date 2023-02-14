@@ -19,10 +19,18 @@ namespace RestaurantAPI.Entities
             modelBuilder.Entity<Dish>()
                 .Property(d => d.Name)
                 .IsRequired();
+            modelBuilder.Entity<Address>()
+                .Property(a => a.City)
+                .IsRequired()
+                .HasMaxLength(50);
+            modelBuilder.Entity<Address>()
+                .Property(a => a.Street)
+                .IsRequired()
+                .HasMaxLength(50);
 
             // seedowanie tabeli danymi 
             //modelBuilder.Entity<Restaurant>()
-                //.HasData()
+            //.HasData()
 
         }
 
