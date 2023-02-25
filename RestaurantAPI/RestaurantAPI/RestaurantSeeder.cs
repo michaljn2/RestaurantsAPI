@@ -6,7 +6,7 @@ namespace RestaurantAPI
 {
     public class RestaurantSeeder
     {
-        private RestaurantDbContext _dbContext;
+        private readonly RestaurantDbContext _dbContext;
 
         public RestaurantSeeder(RestaurantDbContext dbContext)
         {
