@@ -6,6 +6,8 @@ using RestaurantAPI.Services;
 namespace RestaurantAPI.Controllers
 {
     [Route("api/restaurant")]
+    // sprawdza automatycznie poprawnosc modelu danych (wyslanych przez klienta) czyli ModelState.Valid
+    [ApiController]
     public class RestaurantController : ControllerBase
     {
         private readonly IRestaurantService _service;
@@ -24,21 +26,12 @@ namespace RestaurantAPI.Controllers
         public ActionResult<RestaurantDto> Get([FromRoute] int id)
         {
             var restaurant = _service.GetById(id);
-            if (restaurant is null)
-            {
-                return NotFound();
-            }
             return Ok(restaurant);
         }
 
         [HttpPost]
         public ActionResult CreateRestaurant([FromBody] CreateRestaurantDto dto)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             int id = _service.Create(dto);
             // przekazujemy odpowiedz Created wraz ze sciezka pod ktora bedzie dostepny utworzony zasób
             return Created($"/api/restaurant/{id}", null);
@@ -47,11 +40,7 @@ namespace RestaurantAPI.Controllers
         [HttpDelete("{id}")]
         public ActionResult DeleteRestaurant([FromRoute] int id)
         {
-            var isDeleted = _service.Delete(id);
-            if (!isDeleted)
-            {
-                return NotFound();
-            }
+            _service.Delete(id);
 
             return NoContent();
         }
@@ -60,17 +49,7 @@ namespace RestaurantAPI.Controllers
 
         public ActionResult UpdateRestaurant([FromRoute] int id, [FromBody] UpdateRestaurantDto dto)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var isUpdated = _service.Update(id, dto);
-
-            if (!isUpdated)
-            {
-                return NotFound();
-            }
+            _service.Update(id, dto);
 
             return Ok();
 

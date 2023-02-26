@@ -4,6 +4,7 @@ using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using RestaurantAPI.Entities;
+using RestaurantAPI.Exceptions;
 using RestaurantAPI.Models;
 
 namespace RestaurantAPI.Services
@@ -13,8 +14,8 @@ namespace RestaurantAPI.Services
         RestaurantDto GetById(int id);
         IEnumerable<RestaurantDto> GetAll();
         int Create(CreateRestaurantDto dto);
-        bool Delete(int id);
-        bool Update(int id, UpdateRestaurantDto dto);
+        void Delete(int id);
+        void Update(int id, UpdateRestaurantDto dto);
     }
 
     public class RestaurantService : IRestaurantService
@@ -39,7 +40,7 @@ namespace RestaurantAPI.Services
 
             if (restaurant == null)
             {
-                return null;
+                throw new NotFoundException("Restaurant not found");
             }
 
             var result = _mapper.Map<RestaurantDto>(restaurant);
@@ -65,7 +66,7 @@ namespace RestaurantAPI.Services
             return restaurant.Id;
         }
 
-        public bool Delete(int id)
+        public void Delete(int id)
         {
             _logger.LogError($"Restaurant with id: {id} DELETE action invoked");
 
@@ -74,15 +75,14 @@ namespace RestaurantAPI.Services
                 .FirstOrDefault(r => r.Id == id);
             if (restaurant is null)
             {
-                return false;
+                throw new NotFoundException("Restaurant not found");
             }
 
             _context.Restaurants.Remove(restaurant);
             _context.SaveChanges();
-            return true;
         }
 
-        public bool Update(int id, UpdateRestaurantDto dto)
+        public void Update(int id, UpdateRestaurantDto dto)
         {
             var restaurant = _context
                 .Restaurants
@@ -90,14 +90,14 @@ namespace RestaurantAPI.Services
 
             if (restaurant is null)
             {
-                return false;
+                // rzucamy customowy wyjatek zamiast zwracac wartosc boolean
+                throw new NotFoundException("Restaurant not found");
             }
 
             restaurant.Name = dto.Name;
             restaurant.Description = dto.Description;
             restaurant.HasDelivery = dto.HasDelivery;
             _context.SaveChanges();
-            return true;
         }
     }
 }
