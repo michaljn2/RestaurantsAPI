@@ -31,10 +31,31 @@ namespace RestaurantAPI.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<DishDto>> GetAll([FromRoute] int restaurantId)
+        public ActionResult<IEnumerable<DishDto>> Get([FromRoute] int restaurantId)
         {
             var dishes = _service.GetAll(restaurantId);
             return Ok(dishes);
+        }
+
+        [HttpDelete]
+        public ActionResult Delete([FromRoute] int restaurantId)
+        {
+            _service.DeleteAll(restaurantId);
+            return NoContent();
+        }
+
+        [HttpDelete("{dishId}")]
+        public ActionResult Delete([FromRoute] int restaurantId, [FromRoute] int dishId)
+        {
+            _service.DeleteById(restaurantId, dishId);
+            return NoContent();
+        }
+
+        [HttpPut("{dishId}")]
+        public ActionResult Update([FromRoute] int restaurantId, [FromRoute] int dishId, [FromBody] UpdateDishDto dto)
+        {
+            _service.Update(restaurantId, dishId, dto);
+            return Ok();
         }
     }
 }
