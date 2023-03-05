@@ -14,11 +14,18 @@ namespace RestaurantAPI.Controllers
         {
             _service = service;
         }
-        [HttpPost]
+        [HttpPost("register")]
         public ActionResult RegisterUser([FromBody] RegisterUserDto dto)
         {
             _service.RegisterUser(dto);
             return Ok();
+        }
+
+        [HttpPost("login")]
+        public ActionResult Login([FromBody] LoginDto dto)
+        {
+            string token = _service.GenerateJwt(dto);
+            return Ok(token);
         }
     }
 }
