@@ -1,0 +1,37 @@
+﻿using System;
+using System.Runtime.InteropServices.ComTypes;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Logging;
+
+namespace RestaurantAPI.Authorization
+{
+    public class MinimumAgeRequirementHandler : AuthorizationHandler<MinimumAgeRequirement>
+    {
+        private readonly ILogger<MinimumAgeRequirementHandler> _logger;
+        public MinimumAgeRequirementHandler(ILogger<MinimumAgeRequirementHandler> logger)
+        {
+            _logger = logger;
+        }
+        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, MinimumAgeRequirement requirement)
+        {
+            var birthDate = DateTime.Parse(context.User.FindFirst(c => c.Type == "BirthDate").Value);
+
+            var userEmail = context.User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier).Value;
+
+            _logger.LogInformation($"User: {userEmail} with date of birth: [{birthDate}]");
+            if (birthDate.AddYears(requirement.MinimumAge) <= DateTime.Today)
+            {
+                _logger.LogInformation("Authorization succeeded");
+                context.Succeed(requirement);
+            }
+            else
+            {
+                _logger.LogInformation("Authorization failed");
+            }
+
+            return Task.CompletedTask;
+        }
+    }
+}

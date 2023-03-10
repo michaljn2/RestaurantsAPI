@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RestaurantAPI.Models;
 using RestaurantAPI.Services;
@@ -8,6 +9,7 @@ namespace RestaurantAPI.Controllers
     [Route("api/restaurant")]
     // sprawdza automatycznie poprawnosc modelu danych (wyslanych przez klienta) czyli ModelState.Valid
     [ApiController]
+    [Authorize]
     public class RestaurantController : ControllerBase
     {
         private readonly IRestaurantService _service;
@@ -16,6 +18,8 @@ namespace RestaurantAPI.Controllers
             _service = service;
         }
         [HttpGet]
+        // nazwa polityki musi pokrywac sie z ta ze Startup
+        [Authorize(Policy = "Atleast20")]
         public ActionResult <IEnumerable<RestaurantDto>> GetAll()
         {
             var restaurantDtos = _service.GetAll();
@@ -30,6 +34,7 @@ namespace RestaurantAPI.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,Manager")] // w tokenie musi byc jako Claim nazwa roli
         public ActionResult CreateRestaurant([FromBody] CreateRestaurantDto dto)
         {
             int id = _service.Create(dto);
@@ -46,6 +51,7 @@ namespace RestaurantAPI.Controllers
         }
 
         [HttpPut("{id}")]
+        [AllowAnonymous]
 
         public ActionResult UpdateRestaurant([FromRoute] int id, [FromBody] UpdateRestaurantDto dto)
         {
