@@ -17,6 +17,7 @@ namespace RestaurantAPI.Authorization
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, MinimumAgeRequirement requirement)
         {
             var birthDate = DateTime.Parse(context.User.FindFirst(c => c.Type == "BirthDate").Value);
+            
 
             var userEmail = context.User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier).Value;
 
