@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RestaurantAPI.Models;
@@ -37,7 +38,9 @@ namespace RestaurantAPI.Controllers
         [Authorize(Roles = "Admin,Manager")] // w tokenie musi byc jako Claim nazwa roli
         public ActionResult CreateRestaurant([FromBody] CreateRestaurantDto dto)
         {
-            int id = _service.Create(dto);
+            int userId = int.Parse(User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier).Value);
+            int id = _service.Create(dto, userId);
+
             // przekazujemy odpowiedz Created wraz ze sciezka pod ktora bedzie dostepny utworzony zasób
             return Created($"/api/restaurant/{id}", null);
         }
@@ -45,17 +48,16 @@ namespace RestaurantAPI.Controllers
         [HttpDelete("{id}")]
         public ActionResult DeleteRestaurant([FromRoute] int id)
         {
-            _service.Delete(id);
+            _service.Delete(id, User);
 
             return NoContent();
         }
 
         [HttpPut("{id}")]
         [AllowAnonymous]
-
         public ActionResult UpdateRestaurant([FromRoute] int id, [FromBody] UpdateRestaurantDto dto)
         {
-            _service.Update(id, dto);
+            _service.Update(id, dto, User);
 
             return Ok();
 
