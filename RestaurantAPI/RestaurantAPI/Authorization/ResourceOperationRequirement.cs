@@ -13,7 +13,7 @@ namespace RestaurantAPI.Authorization
     {
         public ResourceOperationRequirement(ResourceOperation resourceOperation)
         {
-            resourceOperation = resourceOperation;
+            ResourceOperation = resourceOperation;
         }
         public ResourceOperation ResourceOperation{ get;}
     }
