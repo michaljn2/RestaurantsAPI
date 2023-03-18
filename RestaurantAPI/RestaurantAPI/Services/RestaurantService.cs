@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
 using RestaurantAPI.Authorization;
 using RestaurantAPI.Entities;
 using RestaurantAPI.Exceptions;
@@ -16,7 +17,7 @@ namespace RestaurantAPI.Services
     public interface IRestaurantService
     {
         RestaurantDto GetById(int id);
-        IEnumerable<RestaurantDto> GetAll();
+        PageResult<RestaurantDto> GetAll(RestaurantQuery query);
         int Create(CreateRestaurantDto dto);
         void Delete(int id);
         void Update(int id, UpdateRestaurantDto dto);
@@ -56,15 +57,27 @@ namespace RestaurantAPI.Services
             return result;
         }
 
-        public IEnumerable<RestaurantDto> GetAll()
+        public PageResult<RestaurantDto> GetAll(RestaurantQuery query)
         {
-            var restaurants = _context
+            var baseQuery = _context
                 .Restaurants
                 .Include(r => r.Address)
                 .Include(r => r.Dishes)
+                .Where(r => query.SearchPhrase == null ||
+                            (r.Name.ToUpper().Contains(query.SearchPhrase.ToUpper()) ||
+                             r.Description.ToUpper().Contains(query.SearchPhrase.ToUpper())));
+
+            var restaurants = baseQuery
+                // implementacja paginacji
+                .Skip(query.PageSize * (query.PageNumber - 1))
+                .Take(query.PageSize)
                 .ToList();
 
-            return _mapper.Map<List<RestaurantDto>>(restaurants);
+            var restaurantDtos = _mapper.Map<List<RestaurantDto>>(restaurants);
+            
+            var result = new PageResult<RestaurantDto>(restaurantDtos, baseQuery.Count(), query.PageSize, query.PageNumber);
+            return result;
+
         }
 
         public int Create(CreateRestaurantDto dto)
