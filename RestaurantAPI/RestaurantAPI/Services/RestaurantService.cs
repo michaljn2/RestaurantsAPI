@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Security.Claims;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -66,6 +68,23 @@ namespace RestaurantAPI.Services
                 .Where(r => query.SearchPhrase == null ||
                             (r.Name.ToUpper().Contains(query.SearchPhrase.ToUpper()) ||
                              r.Description.ToUpper().Contains(query.SearchPhrase.ToUpper())));
+
+            if (!string.IsNullOrEmpty(query.SortBy))
+            {
+                var columnsSelector = new Dictionary<string, Expression<Func<Restaurant, object>>>
+                {
+                    // nie hardkodujemy nazw, tylko sa one powiazane z nazwami z klasy Restaurant
+                    { nameof(Restaurant.Name), r => r.Name },
+                    { nameof(Restaurant.Description), r => r.Description },
+                    { nameof(Restaurant.Category), r => r.Category }
+                };
+
+                var selectedColumn = columnsSelector[query.SortBy];
+
+                baseQuery = query.SortDirection == SortDirection.DESC
+                    ? baseQuery.OrderByDescending(selectedColumn)
+                    : baseQuery.OrderBy(selectedColumn);
+            }
 
             var restaurants = baseQuery
                 // implementacja paginacji
