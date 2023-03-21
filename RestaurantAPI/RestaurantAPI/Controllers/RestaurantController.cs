@@ -22,7 +22,7 @@ namespace RestaurantAPI.Controllers
         // nazwa polityki musi pokrywac sie z ta ze Startup
         //[Authorize(Policy = "Atleast20")]
         //[Authorize(Policy = "CreatedAtLeast2Restaurants")]
-        public ActionResult <IEnumerable<RestaurantDto>> GetAll([FromQuery] RestaurantQuery query)
+        public ActionResult <PageResult<RestaurantDto>> GetAll([FromQuery] RestaurantQuery query)
         {
             var restaurantDtos = _service.GetAll(query);
             return Ok(restaurantDtos);
