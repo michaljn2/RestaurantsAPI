@@ -76,6 +76,7 @@ namespace RestaurantAPI
             services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
             services.AddScoped<IValidator<RegisterUserDto>, RegisterUserDtoValidator>();
             services.AddScoped<IValidator<RestaurantQuery>, RestaurantQueryValidator>();
+            services.AddScoped<IValidator<ChangePasswordDto>, ChangePasswordDtoValidator>();
             services.AddScoped<IUserContextService, UserContextService>();
             services.AddHttpContextAccessor();
             services.AddSwaggerGen();

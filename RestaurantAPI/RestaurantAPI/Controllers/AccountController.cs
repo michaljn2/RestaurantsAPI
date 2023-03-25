@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using RestaurantAPI.Models;
 using RestaurantAPI.Services;
 
@@ -26,6 +27,14 @@ namespace RestaurantAPI.Controllers
         {
             string token = _service.GenerateJwt(dto);
             return Ok(token);
+        }
+
+        [Authorize]
+        [HttpPut("change-password")]
+        public ActionResult ChangePassword([FromBody] ChangePasswordDto dto)
+        {
+            _service.ChangePassword(dto);
+            return Ok();
         }
     }
 }
